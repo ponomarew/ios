@@ -128,6 +128,9 @@ Text(mood())
 
 # 4. Homework — Mood Counter v1 (due via Pull Request)
 
+Put your homework with this path
+**homework -> lesson (lesson number) -> your name > your homework**
+
 Create a simple SwiftUI app with:
 
 ### Requirements:
