@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State var count = 0
+    @State private var count = 0
     
     var body: some View {
         VStack(spacing: 30) {
             Text("Sasha: \(count)")
                 .font(.title)
                 .fontWeight(.bold)
-                .padding()
             
             Text(mood())
                 .font(.title2)
@@ -28,43 +27,28 @@ struct ContentView: View {
                     count -= 1
                 }) {
                     Text("-1")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .frame(width: 80, height: 50)
-                        .background(Color.red)
-                        .cornerRadius(10)
+                        .buttonStyle(bgColor: .red)
                 }
                 
                 Button(action: {
                     count = 0
                 }) {
                     Text("Reset")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .frame(width: 80, height: 50)
-                        .background(Color.blue)
-                        .cornerRadius(10)
+                        .buttonStyle(bgColor: .blue)
                 }
                 
                 Button(action: {
                     count += 1
                 }) {
                     Text("+1")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .frame(width: 80, height: 50)
-                        .background(Color.green)
-                        .cornerRadius(10)
+                        .buttonStyle(bgColor: .green)
                 }
             }
         }
         .padding()
     }
     
-    func mood() -> String {
+    private func mood() -> String {
         if count < 0 {
             return "Negative"
         } else if count == 0 {
@@ -82,6 +66,26 @@ struct ContentView: View {
         } else {
             return .green
         }
+    }
+}
+
+struct ButtonTextModifier: ViewModifier {
+    var bgColor: Color
+    
+    func body(content: Content) -> some View {
+        content
+            .font(.title2)
+            .fontWeight(.bold)
+            .foregroundColor(.white)
+            .frame(width: 80, height: 50)
+            .background(bgColor)
+            .cornerRadius(10)
+    }
+}
+
+extension View {
+    func buttonStyle(bgColor: Color) -> some View {
+        modifier(ButtonTextModifier(bgColor: bgColor))
     }
 }
 
