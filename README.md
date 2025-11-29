@@ -20,6 +20,7 @@
 - [Lesson 1 — Intro to Swift & SwiftUI](#lesson-1--intro-to-swift--swiftui)
 - [Lesson 2 — SwiftUI Views, Layout & State](#lesson-2--swiftui-views-layout--state)
 - [Lesson 3 — Lists & Navigation](#lesson-3--lists--navigation)
+- [Lesson 4 — Forms, Images & Alerts](#lesson-4--forms-images--alerts)
 
 ---
 
@@ -690,3 +691,349 @@ Create a simple SwiftUI app with:
 * Apple Docs: Lists and Navigation
 * SwiftUI List tutorial
 * NavigationView documentation
+
+---
+
+# Lesson 4 — Forms, Images & Alerts
+
+<a id="goal-of-the-lesson-4"></a>
+## Goal of the lesson
+
+By the end of this lesson, the student should be able to:
+
+* Create forms using `Form` container
+* Work with different input controls (`Toggle`, `Picker`, `Stepper`)
+* Display images from assets and system symbols
+* Show alerts and action sheets for user feedback
+* Handle user input validation
+* Build complete forms with multiple input types
+
+---
+
+## 1. Forms
+
+### Concept:
+
+> `Form` is a container that groups input controls together. It automatically adapts to different platforms and provides a native look.
+
+### Key points:
+
+* `Form` groups related input controls.
+* Automatically styles controls for the platform.
+* Use `Section` inside forms to organize inputs.
+
+### Example:
+
+```swift
+struct ContentView: View {
+    @State private var name = ""
+    @State private var email = ""
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Personal Information")) {
+                    TextField("Name", text: $name)
+                    TextField("Email", text: $email)
+                }
+            }
+            .navigationTitle("Settings")
+        }
+    }
+}
+```
+
+---
+
+## 2. Input Controls
+
+### Toggle
+
+```swift
+struct ContentView: View {
+    @State private var isEnabled = false
+    
+    var body: some View {
+        Form {
+            Toggle("Enable notifications", isOn: $isEnabled)
+        }
+    }
+}
+```
+
+### Picker
+
+```swift
+struct ContentView: View {
+    @State private var selectedColor = "Red"
+    let colors = ["Red", "Green", "Blue"]
+    
+    var body: some View {
+        Form {
+            Picker("Favorite Color", selection: $selectedColor) {
+                ForEach(colors, id: \.self) { color in
+                    Text(color).tag(color)
+                }
+            }
+        }
+    }
+}
+```
+
+### Stepper
+
+```swift
+struct ContentView: View {
+    @State private var quantity = 1
+    
+    var body: some View {
+        Form {
+            Stepper("Quantity: \(quantity)", value: $quantity, in: 1...10)
+        }
+    }
+}
+```
+
+---
+
+## 3. Images
+
+### Concept:
+
+> `Image` displays images from assets, system symbols, or remote URLs. Use it to add visual content to your app.
+
+### Key points:
+
+* Use `Image("asset-name")` for images.
+* Use `Image(systemName:)` for SF Symbols.
+* Apply modifiers like `.resizable()`, `.scaledToFit()`, `.frame()`.
+
+### Example:
+
+```swift
+struct ContentView: View {
+    var body: some View {
+        VStack(spacing: 20) {
+            // System symbol
+            Image(systemName: "star.fill")
+                .font(.system(size: 50))
+                .foregroundColor(.yellow)
+            
+            // Asset image (if you have "logo" in Assets)
+            Image("logo")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 200)
+        }
+        .padding()
+    }
+}
+```
+
+### Image Modifiers:
+
+```swift
+Image("photo")
+    .resizable()
+    .scaledToFill()
+    .frame(width: 300, height: 200)
+    .clipped()
+    .cornerRadius(12)
+```
+
+---
+
+## 4. Alerts
+
+### Concept:
+
+> `Alert` displays a modal dialog with a message and buttons. Use it to confirm actions or show important information.
+
+### Key points:
+
+* Use `.alert()` modifier with `@State` boolean to control visibility.
+* Define title, message, and buttons.
+* Buttons can be dismissive or have custom actions.
+
+### Example:
+
+```swift
+struct ContentView: View {
+    @State private var showAlert = false
+    
+    var body: some View {
+        VStack {
+            Button("Show Alert") {
+                showAlert = true
+            }
+        }
+        .alert("Important", isPresented: $showAlert) {
+            Button("OK") { }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("This is an important message.")
+        }
+    }
+}
+```
+
+---
+
+## 5. Action Sheets
+
+### Concept:
+
+> `ActionSheet` (now `.confirmationDialog`) presents options from the bottom of the screen. Use it for multiple choices.
+
+### Key points:
+
+* Similar to alerts but appears from the bottom.
+* Good for presenting multiple action options.
+* Use `.confirmationDialog()` modifier.
+
+### Example:
+
+```swift
+struct ContentView: View {
+    @State private var showActionSheet = false
+    
+    var body: some View {
+        VStack {
+            Button("Show Options") {
+                showActionSheet = true
+            }
+        }
+        .confirmationDialog("Choose an option", isPresented: $showActionSheet, titleVisibility: .visible) {
+            Button("Option 1") { }
+            Button("Option 2") { }
+            Button("Cancel", role: .cancel) { }
+        }
+    }
+}
+```
+
+---
+
+## 6. Complete Form Example
+
+### Example:
+
+```swift
+struct ProfileView: View {
+    @State private var name = ""
+    @State private var age = 18
+    @State private var notificationsEnabled = true
+    @State private var selectedTheme = "Light"
+    @State private var showAlert = false
+    
+    let themes = ["Light", "Dark", "Auto"]
+    
+    var body: some View {
+        NavigationView {
+            Form {
+                Section(header: Text("Personal Info")) {
+                    TextField("Name", text: $name)
+                    Stepper("Age: \(age)", value: $age, in: 13...120)
+                }
+                
+                Section(header: Text("Preferences")) {
+                    Toggle("Notifications", isOn: $notificationsEnabled)
+                    Picker("Theme", selection: $selectedTheme) {
+                        ForEach(themes, id: \.self) { theme in
+                            Text(theme).tag(theme)
+                        }
+                    }
+                }
+                
+                Section {
+                    Button("Save Profile") {
+                        showAlert = true
+                    }
+                }
+            }
+            .navigationTitle("Profile")
+            .alert("Profile Saved", isPresented: $showAlert) {
+                Button("OK") { }
+            } message: {
+                Text("Your profile has been saved successfully.")
+            }
+        }
+    }
+}
+```
+
+---
+
+## 7. Homework — Event Registration App
+
+Create a multi-screen SwiftUI app for event registration:
+
+### Requirements:
+
+1. Use: `NavigationView`, `List`, `Form`, `Section`, `TextField`, `Toggle`, `Picker`, `Stepper`, `Button`, `Alert`, `Image`, `@State`, `@Binding`, `ForEach`, `NavigationLink`
+
+2. **Screen 1: Event List** (Main Screen):
+   * Display a list of events using `List` and `ForEach`
+   * Each event should show:
+     * Event name (use SF Symbol as icon)
+     * Event date
+     * Number of registered attendees
+   * Use `Section` to group events (e.g., "Upcoming Events", "Past Events")
+   * Each event row should be a `NavigationLink` to registration screen
+   * Navigation title: "Events"
+
+3. **Screen 2: Registration Form** (Detail Screen):
+   * Use `Form` with multiple `Section`s:
+     * **Personal Information Section**:
+       * TextField for full name (required)
+       * TextField for email (required)
+       * Stepper for number of tickets (range 1-10)
+     * **Preferences Section**:
+       * Toggle for "Receive event updates"
+       * Picker for meal preference (at least 3 options: "Vegetarian", "Vegan", "Regular")
+     * **Additional Info Section**:
+       * TextField for special requests (optional)
+   * **Validation Logic**:
+     * "Register" button should be disabled if name or email is empty
+     * Show different button style when disabled (use conditional modifier)
+   * When "Register" is tapped:
+     * Show Alert confirming registration
+     * Alert should show number of tickets registered
+     * After confirming alert, navigate back to event list
+   * Navigation title should show event name
+
+4. **Screen 3: Registration Summary** (Optional Bonus):
+   * Create a summary view that shows:
+     * Event name with large SF Symbol
+     * All registration details in a formatted list
+     * Use `Section` to organize information
+     * "Done" button that navigates back
+
+5. **Data Management**:
+   * Store events in `@State var events: [String]` in main view
+   * Use `@Binding` to pass event name to registration form
+   * Track registration count (increment when registration is confirmed)
+   * Registration form should use `@State` for all input fields
+
+6. **Visual Requirements**:
+   * Use SF Symbols throughout (at least 3 different symbols)
+   * Style images with appropriate colors and sizes
+   * Apply consistent padding and spacing
+   * Use `.listStyle()` modifier on List
+
+7. **Bonus Challenges**:
+   * Add swipe-to-delete on event list
+   * Show confirmation dialog before deleting
+   * Add validation for email format (basic check for "@" symbol)
+   * Display registration count badge on event list items
+
+---
+
+## 8. Resources
+
+* Apple Docs: Forms and Controls
+* SwiftUI Image documentation
+* Alert and ActionSheet guide
+* Human Interface Guidelines for Forms
+
+---
